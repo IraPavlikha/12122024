@@ -1,54 +1,31 @@
 import time
-from typing import Callable, List
 
-# Завдання 1: Функція для пошуку простих чисел
-
-def timer_decorator(func: Callable) -> Callable:
+def timer_decorator(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print(f"Час виконання: {end_time - start_time:.2f} секунд")
+        elapsed_time = end_time - start_time
+        print(f"Час виконання: {elapsed_time:.2f} секунд")
         return result
     return wrapper
+
 @timer_decorator
-def find_primes(start: int, end: int) -> List[int]:
+def find_primes_in_range(start, end):
     primes = []
-    for num in range(start, end + 1):
-        if num > 1:  # Просте число більше за 1
-            for i in range(2, int(num**0.5) + 1):
-                if num % i == 0:
-                    break
-            else:
-                primes.append(num)
+    for num in range(max(2, start), end + 1):
+        for i in range(2, int(num ** 0.5) + 1):
+            if num % i == 0:
+                is_prime = False
+                break
+        if is_prime:
+            primes.append(num)
     return primes
-# Виклик функції для Завдання 1 і 2
-primes = find_primes(0, 1000)
-print(f"Прості числа: {primes}")
-# Завдання 3: Формати звітності
-def report_decorator(format_type: str):
-    def decorator(func: Callable) -> Callable:
-        def wrapper(*args, **kwargs):
-            report = func(*args, **kwargs)
-            if format_type == "json":
-                import json
-                return json.dumps(report, indent=4)
-            elif format_type == "xml":
-                import dicttoxml
-                return dicttoxml.dicttoxml(report).decode()
-            elif format_type == "text":
-                return "\n".join(f"{key}: {value}" for key, value in report.items())
-            else:
-                raise ValueError("Непідтримуваний формат звіту")
-        return wrapper
-    return decorator
-@report_decorator("json")
-def financial_report():
-    return {
-        "company": "MyCompany",
-        "year": 2024,
-        "revenue": 1000000,
-        "expenses": 500000,
-        "profit": 500000
-    }
-print(financial_report())
+try:
+    start_range = int(input("Введіть початок діапазону: "))
+    end_range = int(input("Введіть кінець діапазону: "))
+    print(f"Прості числа в діапазоні від {start_range} до {end_range}:")
+    primes = find_primes_in_range(start_range, end_range)
+    print(primes)
+except ValueError:
+    print("Будь ласка, введіть коректні цілі числа для діапазону.")
